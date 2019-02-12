@@ -13,12 +13,14 @@ interface Mutations {
   UPDATE_TODO_TITLE: string;
   ADD_TODO: string;
   DELETE_TODO: string;
+  TOGGLE_COMPLETE: string;
 }
 
 const mutations: Mutations = {
   UPDATE_TODO_TITLE: "updateTodoTitle",
   ADD_TODO: "addTodo",
   DELETE_TODO: "deleteTodo",
+  TOGGLE_COMPLETE: "toggleComplete",
 };
 
 Vue.use(Vuex);
@@ -48,6 +50,14 @@ const store = new Vuex.Store({
     deleteTodo(state, todoID) {
       state.todos = state.todos.filter((todo) => todo.id !== todoID);
     },
+    toggleComplete(state, todoID) {
+      state.todos = state.todos.map((todo) => {
+        if (todo.id === todoID) {
+          todo.complete = !todo.complete;
+        }
+        return todo;
+      });
+    },
   },
 
   actions: {
@@ -59,6 +69,9 @@ const store = new Vuex.Store({
     },
     deleteTodo({ commit }, todoID) {
       commit(mutations.DELETE_TODO, todoID);
+    },
+    toggleComplete({ commit }, todoID) {
+      commit(mutations.TOGGLE_COMPLETE, todoID);
     },
   },
 });

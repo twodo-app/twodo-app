@@ -2,10 +2,11 @@
   <div class="todo-list">
     <input type="text" v-model="newTodoTitle" @keypress.enter="addTodo">
     <div class="todo-item" v-for="todo in todos" :key="todo.id">
-      <input type="checkbox" :value="todo.complete">
+      <input type="checkbox" :value="todo.complete" @click="toggleComplete(todo.id)">
       <span>{{todo.title}}</span>
-      <button @click="deleteTodo(todo.id)">🗙</button>
+      <button @click="deleteTodo(todo.id)">Delete 🗙</button>
       <span>{{todo.created}}</span>
+      <span>{{todo.complete}}</span>
     </div>
   </div>
 </template>
@@ -36,6 +37,15 @@ export default Vue.extend({
     deleteTodo(id) {
       this.$store.dispatch("deleteTodo", id);
     },
+    toggleComplete(id) {
+      this.$store.dispatch("toggleComplete", id);
+    },
   },
 });
 </script>
+
+<style>
+.todo-item > * {
+  margin: 10px;
+}
+</style>
