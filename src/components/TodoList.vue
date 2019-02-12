@@ -13,6 +13,7 @@
 <script>
 import Vue from "vue";
 import { Todo } from "../types/todo";
+import { DateTime } from "luxon";
 
 export default Vue.extend({
   computed: {

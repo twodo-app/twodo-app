@@ -1,3 +1,5 @@
+import { DateTime } from "luxon";
+
 export interface Todo {
   id: string;
   title: string;
@@ -7,6 +9,6 @@ export interface Todo {
   estLength?: number;
   timeTaken?: number;
   snoozed?: boolean;
-  created: Date;
+  created: DateTime;
   complete: boolean;
 }
