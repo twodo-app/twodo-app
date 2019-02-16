@@ -30,22 +30,28 @@ import { Todo } from "../types/todo";
 import { DateTime } from "luxon";
 
 export default Vue.extend({
+  data() {
+    return {
+      newTodoTitle: "",
+    };
+  },
   computed: {
     todos: function() {
       return this.$store.state.todos;
     },
-    newTodoTitle: {
-      get: function() {
-        return this.$store.state.newTodoTitle;
-      },
-      set: function(newTodoTitle) {
-        this.$store.dispatch("updateTodoTitle", newTodoTitle);
-      },
-    },
   },
   methods: {
     addTodo() {
-      this.$store.dispatch("addTodo");
+      if (this.newTodoTitle.trim() !== "") {
+        this.$store.dispatch("addTodo", {
+          title: this.newTodoTitle,
+          created: DateTime.local().toMillis(),
+        }).then((res) => {
+          this.newTodoTitle = "";
+        }).catch((err) => {
+          alert(err);
+        });
+      }
     },
     deleteTodo(id) {
       this.$store.dispatch("deleteTodo", id);
@@ -53,11 +59,11 @@ export default Vue.extend({
     toggleComplete(id) {
       this.$store.dispatch("toggleComplete", id);
     },
-    getShortDate(dateTime) {
-      return dateTime.toFormat("HH:mm d MMM");
+    getShortDate(ts_millis) {
+      return DateTime.fromMillis(ts_millis).toFormat("HH:mm d MMM");
     },
-    getLongDate(dateTime) {
-      return dateTime.toLocaleString(DateTime.DATETIME_FULL);
+    getLongDate(ts_millis) {
+      return DateTime.fromMillis(ts_millis).toLocaleString(DateTime.DATETIME_FULL);
     },
   },
 });
@@ -70,7 +76,8 @@ export default Vue.extend({
 }
 
 .new-todo-input {
-  width: 380px;
+  width: 80%;
+  max-width: 380px;
   padding: 8px;
   margin: 12px;
   font-size: 1.2em;
