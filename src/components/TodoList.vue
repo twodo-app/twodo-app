@@ -5,12 +5,18 @@
       v-model="newTodoTitle"
       placeholder="Enter new todo..."
       @keypress.enter="addTodo">
-    <div class="todo-item" v-for="todo in todos" :key="todo.id">
+    <div v-if="loadingTodos" class="loading-message">Loading todos...</div>
+    <div v-if="failedToLoad" class="failed-loading-message">Failed to load todos.</div>
+    <div
+      v-show="!loadingTodos && !failedToLoad"
+      class="todo-item"
+      v-for="todo in todos"
+      :key="todo.id">
       <div class="todo-checkbox"
         :class="{ 'todo-checkbox_checked': todo.complete,
                   'todo-checkbox_unchecked': !todo.complete }"
         :value="todo.complete"
-        @click="toggleComplete(todo.id)">
+        @click="toggleComplete(todo)">
           <div v-show="todo.complete">✔</div>
         </div>
         <div class="todo-title"
@@ -33,6 +39,8 @@ export default Vue.extend({
   data() {
     return {
       newTodoTitle: "",
+      loadingTodos: true,
+      failedToLoad: false,
     };
   },
   computed: {
@@ -45,7 +53,11 @@ export default Vue.extend({
       if (this.newTodoTitle.trim() !== "") {
         this.$store.dispatch("addTodo", {
           title: this.newTodoTitle,
-          created: DateTime.local().toMillis(),
+          created: Date.now(),
+          description: "",
+          priority: 0,
+          due: 0,
+          estimated: 0,
         }).then((res) => {
           this.newTodoTitle = "";
         }).catch((err) => {
@@ -56,8 +68,9 @@ export default Vue.extend({
     deleteTodo(id) {
       this.$store.dispatch("deleteTodo", id);
     },
-    toggleComplete(id) {
-      this.$store.dispatch("toggleComplete", id);
+    toggleComplete(todo) {
+      const updatedTodo = Object.assign(todo, {complete: !todo.complete});
+      this.$store.dispatch("updateTodo", updatedTodo);
     },
     getShortDate(ts_millis) {
       return DateTime.fromMillis(ts_millis).toFormat("HH:mm d MMM");
@@ -65,6 +78,16 @@ export default Vue.extend({
     getLongDate(ts_millis) {
       return DateTime.fromMillis(ts_millis).toLocaleString(DateTime.DATETIME_FULL);
     },
+  },
+  mounted() {
+    this.$store.dispatch("loadTodos")
+      .then((res) => {
+        this.loadingTodos = false;
+      })
+      .catch((err) => {
+        this.loadingTodos = false;
+        this.failedToLoad = true;
+      });
   },
 });
 </script>
@@ -160,5 +183,31 @@ export default Vue.extend({
 }
 .button-delete:hover {
   box-shadow: 0px 1px 3px 1px #cbcbcb;
+}
+
+.failed-loading-message {
+  width: 80%;
+  max-width: 600px;
+  padding: 10px;
+  margin: 10px auto;
+  border: 2px solid #c76a6a;
+  border-radius: 6px;
+  font-style: italic;
+  font-weight: bold;
+  color: #a73839;
+  background-color: #f1d0d0;
+}
+
+.loading-message {
+  width: 80%;
+  max-width: 600px;
+  padding: 10px;
+  margin: 10px auto;
+  border: 2px solid #ffeebc;
+  border-radius: 6px;
+  font-weight: bold;
+  color: #c7ac14;
+  background-color: #fffce8;
+  transition: max-height 1000ms;
 }
 </style>
