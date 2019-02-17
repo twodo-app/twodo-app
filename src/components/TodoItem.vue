@@ -104,6 +104,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-shrink: 0;
   color: #DD0426;
   background-color: #e2e2e2;
   border-radius: 3px;
