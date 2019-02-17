@@ -5,9 +5,9 @@
       v-model="newTodoTitle"
       placeholder="Enter new todo..."
       @keypress.enter="addTodo">
-    <span class="toggle-complete-button"
-          :class="{'toggle-complete_show': displayComplete}"
-          @click="toggleDisplayComplete">☑</span>
+    <span class="toggle-complete-button fa-check-square"
+          :class="{'toggle-complete_show fas': displayComplete, far: !displayComplete}"
+          @click="toggleDisplayComplete"></span>
     <div v-if="loadingTodos" class="loading-message">Loading todos...</div>
     <div v-if="failedToLoad" class="failed-loading-message">Failed to load todos.</div>
     <div v-show="!loadingTodos && !failedToLoad">

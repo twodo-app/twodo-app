@@ -1,11 +1,12 @@
 <template>
   <div class="todo-item">
-    <div class="todo-checkbox"
-         :class="{ 'todo-checkbox_checked': todo.complete,
-         'todo-checkbox_unchecked': !todo.complete }"
-         :value="todo.complete"
-         @click="toggleComplete(todo)">
-      <div v-show="todo.complete">✔</div>
+    <div class="todo-checkbox fas"
+      :class="{
+        'todo-checkbox_checked fa-check': todo.complete,
+        'todo-checkbox_unchecked': !todo.complete
+      }"
+      :value="todo.complete"
+      @click="toggleComplete(todo)">
     </div>
     <div class="todo-title"
          :class="{'todo-title_complete': todo.complete}">{{todo.title}}</div>
@@ -13,7 +14,7 @@
          :title="getLongDate(todo.created)">
       {{getShortDate(todo.created)}}
     </div>
-    <div class="button button-delete" @click="deleteTodo(todo.id)">🗙</div>
+    <div class="button button-delete fas fa-times" @click="deleteTodo(todo.id)"></div>
   </div>
 </template>
 
@@ -57,7 +58,6 @@ export default {
   height: 16px;
   border-radius: 50%;
   cursor: pointer;
-  font-size: 20px;
 }
 .todo-checkbox_unchecked {
   border: 2px solid #b6b6b6;
@@ -69,8 +69,8 @@ export default {
 .todo-checkbox:hover {
   border: 2px solid transparent;
 }
-.todo-checkbox_unchecked:hover:after {
-  content: "✔";
+.todo-checkbox_unchecked:hover:before {
+  content: "\f00c";
   color: #007529;
 }
 
@@ -101,7 +101,9 @@ export default {
 }
 
 .button-delete {
-  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   color: #DD0426;
   background-color: #e2e2e2;
   border-radius: 3px;
