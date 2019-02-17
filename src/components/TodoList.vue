@@ -101,7 +101,7 @@ export default Vue.extend({
   width: 80%;
   max-width: 380px;
   padding: 8px;
-  padding-right: 34px;
+  padding-right: 36px;
   margin: 12px;
   font-size: 1.2em;
   color: #505050;
@@ -117,7 +117,8 @@ export default Vue.extend({
 }
 .new-todo-input_submit {
   position: relative;
-  right: 38px;
+  right: 50px;
+  padding: 0px 12px;
   color: #ccc;
   font-size: 30px;
   cursor: pointer;
