@@ -11,14 +11,14 @@
     <div v-if="loadingTodos" class="loading-message">Loading todos...</div>
     <div v-if="failedToLoad" class="failed-loading-message">Failed to load todos.</div>
     <div v-show="!loadingTodos && !failedToLoad">
-      <TodoItem v-for="todo in incompleteTodos" :key="todo.id" :todo="todo"/>
-      <TodoItem v-for="todo in completeTodos" v-show="displayComplete" :key="todo.id" :todo="todo"/>
+      <TodoItem v-for="todo in todos" :key="todo.id" :todo="todo"/>
     </div>
   </div>
 </template>
 
 <script>
 import Vue from "vue";
+import { mapGetters } from "vuex";
 import TodoItem from "./TodoItem";
 
 export default Vue.extend({
@@ -33,18 +33,10 @@ export default Vue.extend({
     TodoItem,
   },
   computed: {
-    todos: function() {
-      return this.$store.state.todos;
-    },
-    incompleteTodos: function() {
-      return this.$store.getters.incompleteTodos;
-    },
-    completeTodos: function() {
-      return this.$store.getters.completeTodos;
-    },
-    displayComplete: function() {
-      return this.$store.state.displayComplete;
-    },
+    ...mapGetters([
+      "todos",
+      "displayComplete",
+    ]),
   },
   methods: {
     addTodo() {

@@ -6,7 +6,9 @@ import { Todo } from "../types/todo";
 
 interface State {
   todos: Todo[];
-  displayComplete: boolean;
+  settings: {
+    displayComplete: boolean;
+  };
 }
 interface Mutations {
   LOAD_TODOS: string;
@@ -28,19 +30,23 @@ Vue.use(Vuex);
 
 const initialState: State = {
   todos: [],
-  displayComplete: false,
+  settings: {
+    displayComplete: false,
+  },
 };
 
 const store = new Vuex.Store({
   state: initialState,
 
   getters: {
-    incompleteTodos: (state) => {
-      return state.todos.filter((todo) => !todo.complete);
+    todos: (state) => {
+      const incompleteTodos = state.todos.filter((todo) => !todo.complete);
+      const completeTodos = state.todos.filter((todo) => todo.complete);
+      return state.settings.displayComplete
+        ? incompleteTodos.concat(completeTodos)
+        : incompleteTodos;
     },
-    completeTodos: (state) => {
-      return state.todos.filter((todo) => todo.complete);
-    },
+    displayComplete: (state) => state.settings.displayComplete,
   },
 
   mutations: {
@@ -61,7 +67,7 @@ const store = new Vuex.Store({
       });
     },
     toggleDisplayComplete(state) {
-      state.displayComplete = !state.displayComplete;
+      state.settings.displayComplete = !state.settings.displayComplete;
     },
   },
 
