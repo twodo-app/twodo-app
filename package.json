@@ -12,11 +12,9 @@
     "@babel/plugin-proposal-pipeline-operator": "^7.3.2",
     "@babel/preset-typescript": "^7.1.0",
     "@types/luxon": "^1.11.0",
-    "@types/uuid": "^3.4.4",
     "axios": "^0.18.0",
     "luxon": "^1.11.2",
     "tslint": "^5.12.1",
-    "uuid": "^3.3.2",
     "vue": "^2.5.22",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1"

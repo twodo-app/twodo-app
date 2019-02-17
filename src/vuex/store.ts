@@ -1,18 +1,21 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import uuidv4 from "uuid";
 import axios from "axios";
 
 import { Todo } from "../types/todo";
 
 interface State {
   todos: Todo[];
+  settings: {
+    displayComplete: boolean;
+  };
 }
 interface Mutations {
   LOAD_TODOS: string;
   ADD_TODO: string;
   DELETE_TODO: string;
   UPDATE_TODO: string;
+  TOGGLE_DISPLAY_COMPLETE: string;
 }
 
 const mutations: Mutations = {
@@ -20,19 +23,35 @@ const mutations: Mutations = {
   ADD_TODO: "addTodo",
   DELETE_TODO: "deleteTodo",
   UPDATE_TODO: "updateTodo",
+  TOGGLE_DISPLAY_COMPLETE: "toggleDisplayComplete",
 };
 
 Vue.use(Vuex);
 
 const initialState: State = {
   todos: [],
+  settings: {
+    displayComplete: false,
+  },
 };
 
 const store = new Vuex.Store({
   state: initialState,
 
+  getters: {
+    todos: (state) => {
+      const incompleteTodos = state.todos.filter((todo) => !todo.complete);
+      const completeTodos = state.todos.filter((todo) => todo.complete);
+      return state.settings.displayComplete
+        ? incompleteTodos.concat(completeTodos)
+        : incompleteTodos;
+    },
+    displayComplete: (state) => state.settings.displayComplete,
+  },
+
   mutations: {
     addTodo(state, data) {
+      // Filter out duplicates that have already been loaded
       state.todos = state.todos.filter((todo) => data.id !== todo.id);
       state.todos.push(data);
     },
@@ -46,6 +65,9 @@ const store = new Vuex.Store({
         }
         return todo;
       });
+    },
+    toggleDisplayComplete(state) {
+      state.settings.displayComplete = !state.settings.displayComplete;
     },
   },
 
@@ -104,6 +126,9 @@ const store = new Vuex.Store({
         .catch((err) => {
           console.error(err);
         });
+    },
+    toggleDisplayComplete({ commit }) {
+      commit(mutations.TOGGLE_DISPLAY_COMPLETE);
     },
   },
 });
