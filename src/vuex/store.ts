@@ -111,7 +111,16 @@ const store = new Vuex.Store({
       });
     },
     deleteTodo({ commit }, todoID) {
-      commit(mutations.DELETE_TODO, todoID);
+      axios
+        .delete("http://localhost:3000/api/test/todos/" + todoID)
+        .then((res) => {
+          if (res.status >= 200 && res.status < 300) {
+            commit(mutations.DELETE_TODO, todoID);
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     },
     updateTodo({ commit }, todo) {
       axios
