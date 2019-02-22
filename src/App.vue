@@ -1,8 +1,8 @@
 <template>
   <div id="app">
     <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+      <router-link to="/" class="home-link">Home</router-link>
+      <router-link to="/settings" class="settings-link fas fa-cog"></router-link>
     </div>
     <router-view />
   </div>
@@ -17,15 +17,19 @@
   color: #2c3e50;
 }
 #nav {
-  padding: 30px;
+  font-size: 1.4em;
+  display: flex;
+  justify-content: space-between;
 }
 
 #nav a {
+  padding: 15px;
   font-weight: bold;
-  color: #2c3e50;
+  color: #809b7f;
+  text-decoration: none;
 }
 
 #nav a.router-link-exact-active {
-  color: #42b983;
+  color: #1d7108;
 }
 </style>
