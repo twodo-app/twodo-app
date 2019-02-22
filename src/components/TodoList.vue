@@ -8,6 +8,7 @@
         @keypress.enter="addTodo"
         v-focus>
       <i class="new-todo-input_submit fas fa-angle-right"
+        :class="{'valid-input-text': newTodoTitle.trim() !== ''}"
         @click="addTodo"></i>
       <div class="toggle-complete-button"
             @click="toggleDisplayComplete">
@@ -119,11 +120,14 @@ export default Vue.extend({
   position: relative;
   right: 50px;
   padding: 0px 12px;
-  color: #ccc;
+  color: #dadada;
   font-size: 30px;
+}
+.valid-input-text {
+  color: #ccc;
   cursor: pointer;
 }
-.new-todo-input_submit:hover {
+.valid-input-text:hover {
   color: #9e9e9e;
 }
 
