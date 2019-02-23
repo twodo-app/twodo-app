@@ -1,7 +1,9 @@
 <template>
   <div id="app">
     <div id="nav">
-      <router-link :to="username ? { name: 'user', params: { id: username }} : '/'" class="home-link">Todos</router-link>
+      <router-link :to="username ? { name: 'user', params: { id: username }} : '/'" class="todos-link">
+        <img class="app-icon" src="android-chrome-192x192.png">
+        Todos</router-link>
       <router-link to="/settings" class="settings-link fas fa-cog"></router-link>
     </div>
     <router-view />
@@ -52,6 +54,17 @@ export default {
   text-align: center;
   color: #2c3e50;
 }
+
+.todos-link {
+  display: flex;
+  align-items: flex-end;
+}
+.app-icon {
+  width: 30px;
+  height: 30px;
+  padding-right: 10px;
+}
+
 #nav {
   font-size: 1.4em;
   display: flex;
