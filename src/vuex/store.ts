@@ -9,6 +9,7 @@ const apiRoot: string = "https://twodo-app-server.herokuapp.com/api/v1/";
 
 interface State {
   todos: Todo[];
+  loadingState: "loading" | "complete" | "failed";
   settings: {
     userName: string;
     displayComplete: boolean;
@@ -17,6 +18,8 @@ interface State {
 interface Mutations {
   UPDATE_USER: string;
   LOAD_TODOS: string;
+  CLEAR_TODOS: string;
+  UPDATE_LOADING_STATE: string;
   ADD_TODO: string;
   DELETE_TODO: string;
   UPDATE_TODO: string;
@@ -26,6 +29,8 @@ interface Mutations {
 const mutations: Mutations = {
   UPDATE_USER: "updateUser",
   LOAD_TODOS: "loadTodos",
+  CLEAR_TODOS: "clearTodos",
+  UPDATE_LOADING_STATE: "updateLoadingState",
   ADD_TODO: "addTodo",
   DELETE_TODO: "deleteTodo",
   UPDATE_TODO: "updateTodo",
@@ -34,6 +39,7 @@ const mutations: Mutations = {
 
 const initialState: State = {
   todos: [],
+  loadingState: "loading",
   settings: {
     userName: "",
     displayComplete: false,
@@ -52,6 +58,7 @@ const store = new Vuex.Store({
         : incompleteTodos;
     },
     displayComplete: (state) => state.settings.displayComplete,
+    loadingState: (state) => state.loadingState,
   },
 
   mutations: {
@@ -77,46 +84,51 @@ const store = new Vuex.Store({
     toggleDisplayComplete(state) {
       state.settings.displayComplete = !state.settings.displayComplete;
     },
+    updateLoadingState(state, newState) {
+      state.loadingState = newState;
+    },
+    clearTodos(state) {
+      state.todos = [];
+    },
   },
 
   actions: {
     initUser({ commit }) {
-      return new Promise((resolve, reject) => {
-        axios
-          .get(apiRoot + "user")
-          .then((res) => {
-            if (res.status >= 200 && res.status < 300) {
-              commit(mutations.UPDATE_USER, res.data);
-              resolve(res);
-            } else {
-              throw new Error(res.statusText);
-            }
-          })
-          .catch((err) => {
-            console.error(err);
-            reject(err);
-          });
-      });
+      axios
+        .get(apiRoot + "user")
+        .then((res) => {
+          if (res.status >= 200 && res.status < 300) {
+            commit(mutations.UPDATE_USER, res.data);
+          } else {
+            throw new Error(res.statusText);
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+      commit(mutations.UPDATE_LOADING_STATE, "complete");
+    },
+    setUser({ commit }, userName) {
+      commit(mutations.UPDATE_USER, userName);
     },
     loadTodos({ commit, state }) {
-      return new Promise((resolve, reject) => {
-        axios
-          .get(apiRoot + `todos/${state.settings.userName}`)
-          .then((res) => {
-            if (res.status >= 200 && res.status < 300) {
-              res.data.forEach((todo: Todo) => {
-                commit(mutations.ADD_TODO, todo);
-              });
-              resolve(res);
-            } else {
-              throw new Error(res.statusText);
-            }
-          })
-          .catch((err) => {
-            console.error(err);
-            reject(err);
-          });
-      });
+      commit(mutations.CLEAR_TODOS);
+      axios
+        .get(apiRoot + `todos/${state.settings.userName}`)
+        .then((res) => {
+          if (res.status >= 200 && res.status < 300) {
+            res.data.forEach((todo: Todo) => {
+              commit(mutations.ADD_TODO, todo);
+            });
+            commit(mutations.UPDATE_LOADING_STATE, "complete");
+          } else {
+            throw new Error(res.statusText);
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          commit(mutations.UPDATE_LOADING_STATE, "failed");
+        });
     },
     addTodo({ commit, state }, data) {
       return new Promise((resolve, reject) => {

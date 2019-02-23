@@ -17,5 +17,10 @@ export default new Router({
       name: "settings",
       component: Settings,
     },
+    {
+      path: "/:id",
+      name: "user",
+      component: Home,
+    },
   ],
 });

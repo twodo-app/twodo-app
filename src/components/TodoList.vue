@@ -18,9 +18,9 @@
         </i>
       </div>
     </div>
-    <div v-if="loadingTodos" class="loading-message">Loading todos...</div>
-    <div v-if="failedToLoad" class="failed-loading-message">Failed to load todos.</div>
-    <div v-show="!loadingTodos && !failedToLoad">
+    <div v-if="loadingState === 'loading'" class="loading-message">Loading todos...</div>
+    <div v-if="loadingState === 'failed'" class="failed-loading-message">Failed to load todos.</div>
+    <div v-show="loadingState === 'complete'">
       <TodoItem v-for="todo in todos" :key="todo.id" :todo="todo"/>
     </div>
   </div>
@@ -35,8 +35,6 @@ export default Vue.extend({
   data() {
     return {
       newTodoTitle: "",
-      loadingTodos: true,
-      failedToLoad: false,
     };
   },
   components: {
@@ -46,6 +44,7 @@ export default Vue.extend({
     ...mapGetters([
       "todos",
       "displayComplete",
+      "loadingState",
     ]),
   },
   methods: {
@@ -69,34 +68,6 @@ export default Vue.extend({
     toggleDisplayComplete() {
       this.$store.dispatch("toggleDisplayComplete");
     },
-  },
-  mounted() {
-    if (this.$store.state.settings.userName === "") {
-      this.$store.dispatch("initUser")
-        .then((res) => {
-          this.$store.dispatch("loadTodos")
-            .then((res) => {
-              this.loadingTodos = false;
-            })
-            .catch((err) => {
-              this.loadingTodos = false;
-              this.failedToLoad = true;
-            });
-        })
-        .catch((err) => {
-          this.loadingTodos = false;
-          this.failedToLoad = true;
-        });
-    } else {
-      this.$store.dispatch("loadTodos")
-        .then((res) => {
-          this.loadingTodos = false;
-        })
-        .catch((err) => {
-          this.loadingTodos = false;
-          this.failedToLoad = true;
-        });
-    }
   },
   directives: {
     focus: {
