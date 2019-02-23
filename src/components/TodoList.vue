@@ -58,6 +58,7 @@ export default Vue.extend({
           priority: 0,
           due: 0,
           estimated: 0,
+          userid: this.$store.state.settings.userName,
         }).then((res) => {
           this.newTodoTitle = "";
         }).catch((err) => {
@@ -70,14 +71,32 @@ export default Vue.extend({
     },
   },
   mounted() {
-    this.$store.dispatch("loadTodos")
-      .then((res) => {
-        this.loadingTodos = false;
-      })
-      .catch((err) => {
-        this.loadingTodos = false;
-        this.failedToLoad = true;
-      });
+    if (this.$store.state.settings.userName === "") {
+      this.$store.dispatch("initUser")
+        .then((res) => {
+          this.$store.dispatch("loadTodos")
+            .then((res) => {
+              this.loadingTodos = false;
+            })
+            .catch((err) => {
+              this.loadingTodos = false;
+              this.failedToLoad = true;
+            });
+        })
+        .catch((err) => {
+          this.loadingTodos = false;
+          this.failedToLoad = true;
+        });
+    } else {
+      this.$store.dispatch("loadTodos")
+        .then((res) => {
+          this.loadingTodos = false;
+        })
+        .catch((err) => {
+          this.loadingTodos = false;
+          this.failedToLoad = true;
+        });
+    }
   },
   directives: {
     focus: {

@@ -4,13 +4,18 @@ import axios from "axios";
 
 import { Todo } from "../types/todo";
 
+Vue.use(Vuex);
+const apiRoot: string = "https://twodo-app-server.herokuapp.com/api/v1/";
+
 interface State {
   todos: Todo[];
   settings: {
+    userName: string;
     displayComplete: boolean;
   };
 }
 interface Mutations {
+  UPDATE_USER: string;
   LOAD_TODOS: string;
   ADD_TODO: string;
   DELETE_TODO: string;
@@ -19,6 +24,7 @@ interface Mutations {
 }
 
 const mutations: Mutations = {
+  UPDATE_USER: "updateUser",
   LOAD_TODOS: "loadTodos",
   ADD_TODO: "addTodo",
   DELETE_TODO: "deleteTodo",
@@ -26,11 +32,10 @@ const mutations: Mutations = {
   TOGGLE_DISPLAY_COMPLETE: "toggleDisplayComplete",
 };
 
-Vue.use(Vuex);
-
 const initialState: State = {
   todos: [],
   settings: {
+    userName: "",
     displayComplete: false,
   },
 };
@@ -50,6 +55,9 @@ const store = new Vuex.Store({
   },
 
   mutations: {
+    updateUser(state, userName) {
+      state.settings.userName = userName;
+    },
     addTodo(state, data) {
       // Filter out duplicates that have already been loaded
       state.todos = state.todos.filter((todo) => data.id !== todo.id);
@@ -72,10 +80,28 @@ const store = new Vuex.Store({
   },
 
   actions: {
-    loadTodos({ commit }) {
+    initUser({ commit }) {
       return new Promise((resolve, reject) => {
         axios
-          .get("http://localhost:3000/api/test/todos")
+          .get(apiRoot + "user")
+          .then((res) => {
+            if (res.status >= 200 && res.status < 300) {
+              commit(mutations.UPDATE_USER, res.data);
+              resolve(res);
+            } else {
+              throw new Error(res.statusText);
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            reject(err);
+          });
+      });
+    },
+    loadTodos({ commit, state }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(apiRoot + `todos/${state.settings.userName}`)
           .then((res) => {
             if (res.status >= 200 && res.status < 300) {
               res.data.forEach((todo: Todo) => {
@@ -92,10 +118,10 @@ const store = new Vuex.Store({
           });
       });
     },
-    addTodo({ commit }, data) {
+    addTodo({ commit, state }, data) {
       return new Promise((resolve, reject) => {
         axios
-          .post("http://localhost:3000/api/test/todos", data)
+          .post(apiRoot + "todos", data)
           .then((res) => {
             if (res.status >= 200 && res.status < 300) {
               commit(mutations.ADD_TODO, res.data);
@@ -110,9 +136,9 @@ const store = new Vuex.Store({
           });
       });
     },
-    deleteTodo({ commit }, todoID) {
+    deleteTodo({ commit, state }, todoID) {
       axios
-        .delete("http://localhost:3000/api/test/todos/" + todoID)
+        .delete(apiRoot + `todos/${state.settings.userName}/${todoID}`)
         .then((res) => {
           if (res.status >= 200 && res.status < 300) {
             commit(mutations.DELETE_TODO, todoID);
@@ -122,9 +148,9 @@ const store = new Vuex.Store({
           console.error(err);
         });
     },
-    updateTodo({ commit }, todo) {
+    updateTodo({ commit, state }, todo) {
       axios
-        .post(`http://localhost:3000/api/test/todos/${todo.id}`, todo)
+        .post(apiRoot + `todos/${state.settings.userName}/${todo.id}`, todo)
         .then((res) => {
           if (res.status >= 200 && res.status < 300) {
             commit(mutations.UPDATE_TODO, res.data);
