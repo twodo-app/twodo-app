@@ -6,7 +6,7 @@ import Settings from "./views/Settings.vue";
 Vue.use(Router);
 
 export default new Router({
-  base: "/todo-app/",
+  base: "/twodo-app/",
   routes: [
     {
       path: "/",
